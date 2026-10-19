@@ -23,14 +23,25 @@ async function compose($: EngineInterface, args: string[], done: string) {
 export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
-    // Other mods (ponytail's band) share this slot: draw theirs below ours.
+    // Other mods share this slot: draw what answers beneath us below ours.
     const below = await next(e).catch(() => undefined)
     const docker = await hasCompose(p => $.fs.exists(p))
+    // Plugins in the same tier nest in an order the engine picks; the nearest link beneath us at an index past 1
+    // means a hook above wraps us (ponytail stacks us under its band with no gap), so leave a line above.
+    const hasAbove = (next.trace[0]?.index ?? 1) > 1
 
     const { Box, Button, Text } = $.ui.resolve(e)
     // A framed, labelled box in Claude's colour so it never reads as part of ponytail's band.
     const mine = (
-      <Box flexDirection="row" alignItems="center" gap={2} borderStyle="round" borderColor="claude" paddingX={1}>
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        gap={2}
+        borderStyle="round"
+        borderColor="claude"
+        paddingX={1}
+        marginTop={hasAbove ? 1 : 0}
+      >
         <Text bold color="claude">
           ⚡ Quick actions
         </Text>
