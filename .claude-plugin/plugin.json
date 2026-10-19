@@ -1,0 +1,1 @@
+{ "name": "quick-actions", "version": "0.1.0", "description": "Board above the prompt: Commit + Push, and Docker up/stop when a compose file exists." }
